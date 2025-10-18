@@ -9,6 +9,7 @@ on:
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -24,11 +25,18 @@ jobs:
           pip install -r app/requirements.txt
           pip install pytest
 
-      - name: Run tests
+      - name: Verify app directory
         run: |
-          export PYTHONPATH="${{ github.workplace }}"
-          pytest -q
+          echo "Current directory: $(pwd)"
+          ls -R
 
+      - name: Run tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          echo "PYTHONPATH is $PYTHONPATH"
+          pytest -vv
+          
   docker_build_and_push:
     needs: build_and_test
     runs-on: ubuntu-latest
